@@ -14,7 +14,7 @@ word_node* insert_node(word_node* head_ptr, char* word);
 word_node* delete_node(word_node* head_ptr, char* word);
 int find_word(word_node* head_ptr, char* word);
 void print_list(word_node* head_ptr);
-char* to_lowercase(char* word);
+void to_lowercase(char* word);
 void free_nodes(word_node* head_ptr);
 
 int main() {
@@ -29,6 +29,7 @@ int main() {
             printf("error: failed to get input");
             continue;
         }
+        to_lowercase(input_string);
 
         if (input_string[0] == '-') {
             if (strncmp(input_string, "-delete=", 8) == 0) {
@@ -41,15 +42,17 @@ int main() {
                 break;
             }
 
-            printf("error: invalid command");
+            printf("error: invalid command\n");
+            continue;
         }
 
         head_ptr = insert_node(head_ptr, input_string);
     }
-     
+
     // input validation isalpha for words
 
     // handle SIGINT gracefully *print list when kill signal is sent
+
     print_list(head_ptr);
     free_nodes(head_ptr);
 
@@ -58,7 +61,7 @@ int main() {
 
 word_node* insert_node(word_node* head_ptr, char* word) {
     word_node* new_node = malloc(sizeof(word_node)); 
-    new_node -> word = strdup(to_lowercase(word));
+    new_node -> word = strdup(word);
     new_node -> next = NULL;
     new_node -> prev = NULL;
 
@@ -187,12 +190,10 @@ void print_list(word_node* head_ptr) {
     }
 }
 
-char* to_lowercase(char* word) {
+void to_lowercase(char* word) {
     for (int i = 0, n = strlen(word); i < n; i++) {
         word[i] = tolower(word[i]);
     }
-
-    return word;
 }
 
 void free_nodes(word_node* head_ptr) {
