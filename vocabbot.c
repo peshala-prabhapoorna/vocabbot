@@ -49,10 +49,6 @@ int main() {
         head_ptr = insert_node(head_ptr, input_string);
     }
 
-    // input validation isalpha for words
-
-    // handle SIGINT gracefully *print list when kill signal is sent
-
     print_list(head_ptr);
     free_nodes(head_ptr);
 
