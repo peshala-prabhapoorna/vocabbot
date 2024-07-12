@@ -15,6 +15,7 @@ word_node* delete_node(word_node* head_ptr, char* word);
 int find_word(word_node* head_ptr, char* word);
 void print_list(word_node* head_ptr);
 void to_lowercase(char* word);
+bool only_letters(char* word);
 void free_nodes(word_node* head_ptr);
 
 int main() {
@@ -56,6 +57,15 @@ int main() {
 }
 
 word_node* insert_node(word_node* head_ptr, char* word) {
+    if (!only_letters(word)) {
+        printf(
+            "invalid input: '%s' contains non alphabetical characters\n",
+            word
+        );
+
+        return head_ptr;
+    }
+
     word_node* new_node = malloc(sizeof(word_node)); 
     new_node -> word = strdup(word);
     new_node -> next = NULL;
@@ -190,6 +200,15 @@ void to_lowercase(char* word) {
     for (int i = 0, n = strlen(word); i < n; i++) {
         word[i] = tolower(word[i]);
     }
+}
+
+bool only_letters(char* word) {
+    for (int i = 0, n = strlen(word); i < n; i++) {
+        if (isalpha(word[i]) == 0) {
+            return false;
+        }
+    }
+    return true;
 }
 
 void free_nodes(word_node* head_ptr) {
