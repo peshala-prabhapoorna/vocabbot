@@ -1,4 +1,5 @@
 #include <ctype.h>
+#include <signal.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,6 +18,10 @@ void print_list(word_node* head_ptr);
 void to_lowercase(char* word);
 bool only_letters(char* word);
 void free_nodes(word_node* head_ptr);
+void handler_sigint(int _);
+
+// for handling SIGINT
+bool keep_running = true;
 
 int main() {
     printf("commands: -delete=WORD | -find=WORD | -quit\n");
@@ -24,15 +29,20 @@ int main() {
     word_node* head_ptr = NULL;
     char input_string[54];
 
-    while (true) {
+    // for handling SIGINT
+    struct sigaction act;
+    act.sa_handler = handler_sigint;
+    sigaction(SIGINT, &act, NULL);
+
+    while (keep_running) {
         printf("insert word to the list or enter command: ");
-        if (scanf("%s", input_string) != 1) {
-            printf("error: failed to get input");
+        if (scanf("%s", input_string) != 1 && keep_running == true) {
+            printf("error: failed to get input\n");
             continue;
         }
         to_lowercase(input_string);
 
-        if (input_string[0] == '-') {
+        if (input_string[0] == '-' && keep_running == true) {
             if (strncmp(input_string, "-delete=", 8) == 0) {
                 head_ptr = delete_node(head_ptr, input_string + 8);
                 continue;
@@ -47,7 +57,9 @@ int main() {
             continue;
         }
 
-        head_ptr = insert_node(head_ptr, input_string);
+        if (keep_running == true) {
+            head_ptr = insert_node(head_ptr, input_string);
+        }
     }
 
     print_list(head_ptr);
@@ -221,4 +233,11 @@ void free_nodes(word_node* head_ptr) {
 
         ptr = next;
     }
+}
+
+
+void handler_sigint(int _) {
+    printf("\nkeyboard interrupt received\nexiting application...\n");
+
+    keep_running = false;
 }
